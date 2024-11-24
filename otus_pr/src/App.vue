@@ -1,30 +1,54 @@
-<script setup>
-import HelloWorld from './components/HelloWorld.vue'
-</script>
-
 <template>
-  <div>
-    <a href="https://vite.dev" target="_blank">
-      <img src="/vite.svg" class="logo" alt="Vite logo" />
-    </a>
-    <a href="https://vuejs.org/" target="_blank">
-      <img src="./assets/vue.svg" class="logo vue" alt="Vue logo" />
-    </a>
+  <Loader v-if="isLoading" />
+  <div v-else>
+    <div class="container">
+      <div class="goods">
+        <ICard v-for="product of products" :key="product.id" :product="product"></ICard>
+        <div>
+
+        </div>
+      </div>
+    </div>
   </div>
-  <HelloWorld msg="Vite + Vue" />
+
 </template>
 
+<script setup>
+
+import {onMounted, ref } from 'vue';
+import ICard from './components/Card.vue';
+import Loader from './components/Layout/Loader.vue';
+
+const products = ref([])
+const isLoading = ref(true)
+
+onMounted(async () => {
+    const res = await fetch('https://fakestoreapi.com/products')
+if (res.ok) {
+   products.value = await res.json();
+   setTimeout(() => {
+      isLoading.value = false
+    }, "1000");
+} else {
+  alert("Ошибка: " + res.status);
+}
+})
+
+</script>
+
 <style scoped>
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
+.container {
+  max-width: 1000px;
 }
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-.logo.vue:hover {
-  filter: drop-shadow(0 0 2em #42b883aa);
+
+.goods {
+  display: grid;
+  grid-template-columns: repeat(3, 30%);
+  width: 100%;
+  max-width: 1000px;
+  justify-content: center;
+  justify-items: center;
+  gap: 30px;
+  margin: 0 auto;
 }
 </style>
